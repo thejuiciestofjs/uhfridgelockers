@@ -365,19 +365,12 @@
       }
     });
 
-    onValue(lockersRef, (snapshot) => {
+   onValue(lockersRef, (snapshot) => {
       const data = snapshot.val();
       
-      if (!data) {
-        const initial = {};
-        for (let i = 1; i <= TOTAL_LOCKERS; i++) {
-          initial[`locker_${i}`] = { loaded: false, timestamp: null }; // String keys prevent Firebase Array Coercion
-        }
-        set(lockersRef, initial);
-        lockerState = initial;
-      } else {
-        lockerState = data;
-      }
+      // Use existing cloud data, or default to an empty local object if none exists yet.
+      // This prevents the app from pushing a blank reset to the server on load.
+      lockerState = data || {}; 
       
       renderLockers();
     });
