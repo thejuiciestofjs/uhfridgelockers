@@ -347,7 +347,7 @@
     // Initialize Firebase
    const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const lockersRef = ref(db, 'smart_lockers'); // Renamed database node for a fresh start
+    const lockersRef = ref(db, 'lockers_v3'); // Renamed database node for a fresh start
 
     const TOTAL_LOCKERS = 28;
     const gridContainer = document.getElementById('locker-grid');
