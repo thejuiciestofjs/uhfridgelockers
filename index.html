@@ -345,16 +345,15 @@
     // -------------------------------------------------
 
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
+   const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const lockersRef = ref(db, 'lockers');
+    const lockersRef = ref(db, 'smart_lockers'); // Renamed database node for a fresh start
 
     const TOTAL_LOCKERS = 28;
     const gridContainer = document.getElementById('locker-grid');
     const connIndicator = document.getElementById('connection-indicator');
     let lockerState = {};
 
-    // Track connection status
     const connectedRef = ref(db, '.info/connected');
     onValue(connectedRef, (snap) => {
       if (snap.val() === true) {
@@ -366,15 +365,13 @@
       }
     });
 
-    // Listens for real-time changes across any user. Runs instantly on initial load too.
     onValue(lockersRef, (snapshot) => {
       const data = snapshot.val();
       
       if (!data) {
-        // First load ever: initialize all 28 lockers to "unloaded" in the DB
         const initial = {};
         for (let i = 1; i <= TOTAL_LOCKERS; i++) {
-          initial[i] = { loaded: false, timestamp: null };
+          initial[`locker_${i}`] = { loaded: false, timestamp: null }; // String keys prevent Firebase Array Coercion
         }
         set(lockersRef, initial);
         lockerState = initial;
@@ -398,9 +395,9 @@
       return `${month}/${day}/${year} ${hours}:${minutes}${ampm}`;
     }
 
-    // This handles local user clicks and updates the central cloud
     window.toggleLocker = function(id) {
-      const locker = lockerState[id] || { loaded: false, timestamp: null };
+      const key = `locker_${id}`;
+      const locker = lockerState[key] || { loaded: false, timestamp: null };
       const isCurrentlyLoaded = locker.loaded;
       
       const updatedData = {
@@ -408,15 +405,14 @@
         timestamp: !isCurrentlyLoaded ? new Date().toISOString() : null
       };
 
-      // Updates only this specific locker in the shared database
-      update(ref(db, `lockers/${id}`), updatedData);
+      update(ref(db, `smart_lockers/${key}`), updatedData);
     };
 
     window.resetAllLockers = function() {
       if (confirm("Are you sure you want to reset all lockers back to Unloaded? This will reset the status for ALL shared users.")) {
         const resetData = {};
         for (let i = 1; i <= TOTAL_LOCKERS; i++) {
-          resetData[i] = { loaded: false, timestamp: null };
+          resetData[`locker_${i}`] = { loaded: false, timestamp: null };
         }
         set(lockersRef, resetData);
       }
@@ -425,7 +421,8 @@
     function updateMetrics() {
       let loaded = 0;
       for (let i = 1; i <= TOTAL_LOCKERS; i++) {
-        if (lockerState[i] && lockerState[i].loaded) loaded++;
+        const key = `locker_${i}`;
+        if (lockerState[key] && lockerState[key].loaded) loaded++;
       }
       document.getElementById('loaded-count').textContent = loaded;
       document.getElementById('unloaded-count').textContent = TOTAL_LOCKERS - loaded;
@@ -435,7 +432,9 @@
       gridContainer.innerHTML = '';
       
       for (let i = 1; i <= TOTAL_LOCKERS; i++) {
-        const data = lockerState[i] || { loaded: false, timestamp: null };
+        const key = `locker_${i}`;
+        const data = lockerState[key] || { loaded: false, timestamp: null };
+        
         const btn = document.createElement('button');
         btn.className = `locker-btn ${data.loaded ? 'loaded' : 'unloaded'}`;
         btn.setAttribute('onclick', `toggleLocker(${i})`);
