@@ -17,315 +17,108 @@
       --border-color: #2e3746;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; }
+    .container { width: 100%; max-width: 1100px; }
+    
+    /* Gate Styles */
+    #access-gate { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; text-align: center; }
+    .gate-btn { background: var(--accent-green); color: #fff; border: none; padding: 1rem 2rem; font-size: 1.25rem; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px var(--accent-green-glow); }
+    .gate-btn:hover { background: #0ea5e9; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); }
 
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem;
-    }
+    /* Board Styles */
+    #main-board { display: none; width: 100%; }
+    header { margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+    .header-content { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
+    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
+    .subtitle { color: var(--text-muted); font-size: 0.95rem; }
+    
+    .legend { display: flex; gap: 1.5rem; background: var(--card-bg); padding: 0.75rem 1.25rem; border-radius: 8px; border: 1px solid var(--border-color); }
+    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; }
+    .indicator { width: 16px; height: 16px; border-radius: 4px; }
+    .indicator.unloaded { background-color: var(--accent-green); box-shadow: 0 0 8px var(--accent-green-glow); }
+    .indicator.loaded { background-color: var(--accent-red); box-shadow: 0 0 8px var(--accent-red-glow); }
 
-    .container {
-      width: 100%;
-      max-width: 1100px;
-    }
+    .connection-status { font-size: 0.8rem; background: rgba(16, 185, 129, 0.1); color: var(--accent-green); padding: 0.35rem 0.75rem; border-radius: 20px; display: flex; align-items: center; gap: 0.4rem; }
+    .connection-status.offline { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 
-    header {
-      margin-bottom: 2rem;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 1.5rem;
-    }
+    .dashboard-panel { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: var(--card-bg); padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1.5rem; }
+    .stats { display: flex; gap: 1.5rem; }
+    .stat-box { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+    .stat-box span { color: var(--text-main); font-size: 1.1rem; margin-left: 0.25rem; }
+    
+    .btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s ease; }
+    .btn:hover { background: var(--border-color); color: var(--text-main); }
 
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
+    .locker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1.1rem; }
+    .locker-btn { background-color: #1a202c; border: 2px solid var(--border-color); border-radius: 12px; aspect-ratio: 1 / 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 1.1rem 0.75rem; cursor: pointer; user-select: none; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    .locker-number { font-size: 2.2rem; font-weight: 800; line-height: 1; color: var(--text-muted); }
+    .locker-status { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .locker-date { font-size: 0.7rem; font-family: monospace; color: rgba(255, 255, 255, 0.8); margin-top: auto; text-align: center; }
 
-    h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 0.5rem;
-    }
+    .locker-btn.unloaded { border-color: var(--accent-green); background-color: rgba(16, 185, 129, 0.03); }
+    .locker-btn.unloaded:hover { background-color: rgba(16, 185, 129, 0.08); box-shadow: 0 0 15px var(--accent-green-glow); }
+    .locker-btn.unloaded .locker-number { color: var(--accent-green); text-shadow: 0 0 4px var(--accent-green-glow); }
+    .locker-btn.unloaded .locker-status { color: var(--accent-green); }
 
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    .legend {
-      display: flex;
-      gap: 1.5rem;
-      background: var(--card-bg);
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .indicator {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-    }
-
-    .indicator.unloaded {
-      background-color: var(--accent-green);
-      box-shadow: 0 0 8px var(--accent-green-glow);
-    }
-
-    .indicator.loaded {
-      background-color: var(--accent-red);
-      box-shadow: 0 0 8px var(--accent-red-glow);
-    }
-
-    /* Connection Status */
-    .connection-status {
-      font-size: 0.8rem;
-      background: rgba(16, 185, 129, 0.1);
-      color: var(--accent-green);
-      padding: 0.35rem 0.75rem;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .connection-status.offline {
-      background: rgba(239, 68, 68, 0.1);
-      color: var(--accent-red);
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
-    /* Controls & Stats Dashboard */
-    .dashboard-panel {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-      background: var(--card-bg);
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 1.5rem;
-    }
-
-    .stats {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    .stat-box {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .stat-box span {
-      color: var(--text-main);
-      font-size: 1.1rem;
-      margin-left: 0.25rem;
-    }
-
-    .controls {
-      display: flex;
-      gap: 0.75rem;
-    }
-
-    .btn {
-      background: transparent;
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .btn:hover {
-      background: var(--border-color);
-      color: var(--text-main);
-    }
-
-    /* Grid Layout */
-    .locker-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 1.1rem;
-    }
-
-    /* Individual Locker Button Style */
-    .locker-btn {
-      background-color: #1a202c;
-      border: 2px solid var(--border-color);
-      border-radius: 12px;
-      aspect-ratio: 1 / 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.1rem 0.75rem;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-
-    .locker-number {
-      font-size: 2.2rem;
-      font-weight: 800;
-      line-height: 1;
-      color: var(--text-muted);
-    }
-
-    .locker-status {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .locker-date {
-      font-size: 0.7rem;
-      font-family: monospace;
-      color: rgba(255, 255, 255, 0.8);
-      margin-top: auto;
-      text-align: center;
-    }
-
-    /* Unloaded (Green) Active State */
-    .locker-btn.unloaded {
-      border-color: var(--accent-green);
-      background-color: rgba(16, 185, 129, 0.03);
-    }
-
-    .locker-btn.unloaded:hover {
-      background-color: rgba(16, 185, 129, 0.08);
-      box-shadow: 0 0 15px var(--accent-green-glow);
-    }
-
-    .locker-btn.unloaded .locker-number {
-      color: var(--accent-green);
-      text-shadow: 0 0 4px var(--accent-green-glow);
-    }
-
-    .locker-btn.unloaded .locker-status {
-      color: var(--accent-green);
-    }
-
-    /* Loaded (Red) Active State */
-    .locker-btn.loaded {
-      border-color: var(--accent-red);
-      background-color: rgba(239, 68, 68, 0.04);
-    }
-
-    .locker-btn.loaded:hover {
-      background-color: rgba(239, 68, 68, 0.09);
-      box-shadow: 0 0 15px var(--accent-red-glow);
-    }
-
-    .locker-btn.loaded .locker-number {
-      color: var(--accent-red);
-      text-shadow: 0 0 4px var(--accent-red-glow);
-    }
-
-    .locker-btn.loaded .locker-status {
-      color: var(--accent-red);
-      margin-bottom: 0.25rem;
-    }
-
-    @media (max-width: 640px) {
-      .header-content {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .legend {
-        justify-content: space-around;
-      }
-      .dashboard-panel {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1.25rem;
-      }
-      .controls {
-        width: 100%;
-      }
-      .controls .btn {
-        flex: 1;
-      }
-    }
+    .locker-btn.loaded { border-color: var(--accent-red); background-color: rgba(239, 68, 68, 0.04); }
+    .locker-btn.loaded:hover { background-color: rgba(239, 68, 68, 0.09); box-shadow: 0 0 15px var(--accent-red-glow); }
+    .locker-btn.loaded .locker-number { color: var(--accent-red); text-shadow: 0 0 4px var(--accent-red-glow); }
+    .locker-btn.loaded .locker-status { color: var(--accent-red); margin-bottom: 0.25rem; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <header>
-      <div class="header-content">
-        <div>
-          <h1>Smart Locker System</h1>
-          <div style="display:flex; gap: 1rem; align-items: center; margin-top: 0.25rem;">
-            <p class="subtitle">Shared Real-Time Locker Tracker (1 - 28)</p>
-            <div id="connection-indicator" class="connection-status offline">
-              <span class="dot"></span>Connecting...
+    <!-- Active Gate -->
+    <div id="access-gate">
+      <h1 style="margin-bottom: 1.5rem;">Smart Locker Tracker</h1>
+      <button class="gate-btn" onclick="initializeBoard()">Connect to Kiosk Board</button>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-board">
+      <header>
+        <div class="header-content">
+          <div>
+            <h1>Smart Locker System</h1>
+            <div style="display:flex; gap: 1rem; align-items: center; margin-top: 0.25rem;">
+              <p class="subtitle">Shared Real-Time Locker Tracker (1 - 28)</p>
+              <div id="connection-indicator" class="connection-status offline">
+                <span class="dot"></span>Connecting...
+              </div>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-item">
+              <span class="indicator unloaded"></span> Unloaded (Available)
+            </div>
+            <div class="legend-item">
+              <span class="indicator loaded"></span> Loaded (Tracking Time)
             </div>
           </div>
         </div>
-        <div class="legend">
-          <div class="legend-item">
-            <span class="indicator unloaded"></span> Unloaded (Available)
-          </div>
-          <div class="legend-item">
-            <span class="indicator loaded"></span> Loaded (Tracking Time)
-          </div>
+      </header>
+
+      <div class="dashboard-panel">
+        <div class="stats">
+          <div class="stat-box">Total: <span>28</span></div>
+          <div class="stat-box">Loaded (Red): <span id="loaded-count" style="color: var(--accent-red);">0</span></div>
+          <div class="stat-box">Unloaded (Green): <span id="unloaded-count" style="color: var(--accent-green);">28</span></div>
+        </div>
+        <div class="controls">
+          <button class="btn" onclick="resetAllLockers()">Reset All to Unloaded</button>
         </div>
       </div>
-    </header>
 
-    <div class="dashboard-panel">
-      <div class="stats">
-        <div class="stat-box">Total: <span>28</span></div>
-        <div class="stat-box">Loaded (Red): <span id="loaded-count" style="color: var(--accent-red);">0</span></div>
-        <div class="stat-box">Unloaded (Green): <span id="unloaded-count" style="color: var(--accent-green);">28</span></div>
+      <div class="locker-grid" id="locker-grid">
+        <!-- Lockers will render here AFTER the gate is passed -->
       </div>
-      <div class="controls">
-        <button class="btn" onclick="resetAllLockers(event)">Reset All to Unloaded</button>
-      </div>
-    </div>
-
-    <div class="locker-grid" id="locker-grid">
-      <!-- Lockers are generated dynamically -->
     </div>
   </div>
 
-<!-- Firebase JavaScript SDKs -->
+  <!-- Firebase JavaScript SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -341,40 +134,40 @@
       measurementId: "G-T1LZRWX1HP"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const lockersRef = ref(db, 'lockers_v6'); // Bumped to v6 for a clean slate
-
+    let db;
+    let lockersRef;
     const TOTAL_LOCKERS = 28;
     const gridContainer = document.getElementById('locker-grid');
     const connIndicator = document.getElementById('connection-indicator');
     let lockerState = {};
 
-    // --- ENTERPRISE SCANNER DEFENSES ---
-    const PAGE_LOAD_TIME = Date.now();
-    let botDetected = false;
-    
-    // This function is triggered if the invisible honeypot button is clicked
-    window.flagSecurityBot = function() {
-      botDetected = true;
-      console.log("Security scanner detected and isolated.");
+    // This function is only called when a human explicitly clicks the Access Gate
+    window.initializeBoard = function() {
+      document.getElementById('access-gate').style.display = 'none';
+      document.getElementById('main-board').style.display = 'block';
+
+      const app = initializeApp(firebaseConfig);
+      db = getDatabase(app);
+      
+      // Bumped to v7 to ensure zero interference from previous scanner clicks
+      lockersRef = ref(db, 'lockers_v7'); 
+
+      const connectedRef = ref(db, '.info/connected');
+      onValue(connectedRef, (snap) => {
+        if (snap.val() === true) {
+          connIndicator.className = "connection-status";
+          connIndicator.innerHTML = '<span class="dot"></span> Online';
+        } else {
+          connIndicator.className = "connection-status offline";
+          connIndicator.innerHTML = '<span class="dot"></span> Offline';
+        }
+      });
+
+      onValue(lockersRef, (snapshot) => {
+        lockerState = snapshot.val() || {}; 
+        renderLockers();
+      });
     };
-
-    const connectedRef = ref(db, '.info/connected');
-    onValue(connectedRef, (snap) => {
-      if (snap.val() === true) {
-        connIndicator.className = "connection-status";
-        connIndicator.innerHTML = '<span class="dot"></span> Online';
-      } else {
-        connIndicator.className = "connection-status offline";
-        connIndicator.innerHTML = '<span class="dot"></span> Offline';
-      }
-    });
-
-    onValue(lockersRef, (snapshot) => {
-      lockerState = snapshot.val() || {}; 
-      renderLockers();
-    });
 
     function formatDateTime(dateString) {
       if (!dateString) return '';
@@ -390,12 +183,6 @@
     }
 
     window.toggleLocker = function(id) {
-      // Defense 1: If the invisible honeypot was clicked, block all action
-      if (botDetected) return;
-      
-      // Defense 2: If the click happens within 2 seconds of the page loading, block it
-      if (Date.now() - PAGE_LOAD_TIME < 2000) return;
-
       const key = `locker_${id}`;
       const locker = lockerState[key] || { loaded: false, timestamp: null };
       const isCurrentlyLoaded = locker.loaded;
@@ -405,13 +192,10 @@
         timestamp: !isCurrentlyLoaded ? new Date().toISOString() : null
       };
 
-      set(ref(db, `lockers_v6/${key}`), updatedData);
+      set(ref(db, `lockers_v7/${key}`), updatedData);
     };
 
     window.resetAllLockers = function() {
-      if (botDetected) return;
-      if (Date.now() - PAGE_LOAD_TIME < 2000) return;
-
       if (confirm("Are you sure you want to reset all lockers back to Unloaded? This will reset the status for ALL shared users.")) {
         const resetData = {};
         for (let i = 1; i <= TOTAL_LOCKERS; i++) {
@@ -433,14 +217,6 @@
 
     function renderLockers() {
       gridContainer.innerHTML = '';
-      
-      // Defense 3: Insert the invisible Honeypot button first
-      const honeypot = document.createElement('button');
-      honeypot.style.opacity = '0';
-      honeypot.style.position = 'absolute';
-      honeypot.style.left = '-9999px';
-      honeypot.setAttribute('onclick', 'flagSecurityBot()');
-      gridContainer.appendChild(honeypot);
       
       for (let i = 1; i <= TOTAL_LOCKERS; i++) {
         const key = `locker_${i}`;
