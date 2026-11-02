@@ -330,7 +330,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // ----------------- CONFIGURATION -----------------
     const firebaseConfig = {
       apiKey: "AIzaSyA6VzjY12jLUTQ6vO01r07SsiYPU4cTh4M",
       authDomain: "kiosk-fridge-lockers.firebaseapp.com",
@@ -341,16 +340,25 @@
       appId: "1:1034234849028:web:e63dbb90ef15f49bb2d251",
       measurementId: "G-T1LZRWX1HP"
     };
-    // -------------------------------------------------
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const lockersRef = ref(db, 'lockers_v5'); // Bumped to v5 for a completely clean slate
+    const lockersRef = ref(db, 'lockers_v6'); // Bumped to v6 for a clean slate
 
     const TOTAL_LOCKERS = 28;
     const gridContainer = document.getElementById('locker-grid');
     const connIndicator = document.getElementById('connection-indicator');
     let lockerState = {};
+
+    // --- ENTERPRISE SCANNER DEFENSES ---
+    const PAGE_LOAD_TIME = Date.now();
+    let botDetected = false;
+    
+    // This function is triggered if the invisible honeypot button is clicked
+    window.flagSecurityBot = function() {
+      botDetected = true;
+      console.log("Security scanner detected and isolated.");
+    };
 
     const connectedRef = ref(db, '.info/connected');
     onValue(connectedRef, (snap) => {
@@ -364,8 +372,7 @@
     });
 
     onValue(lockersRef, (snapshot) => {
-      const data = snapshot.val();
-      lockerState = data || {}; 
+      lockerState = snapshot.val() || {}; 
       renderLockers();
     });
 
@@ -383,6 +390,12 @@
     }
 
     window.toggleLocker = function(id) {
+      // Defense 1: If the invisible honeypot was clicked, block all action
+      if (botDetected) return;
+      
+      // Defense 2: If the click happens within 2 seconds of the page loading, block it
+      if (Date.now() - PAGE_LOAD_TIME < 2000) return;
+
       const key = `locker_${id}`;
       const locker = lockerState[key] || { loaded: false, timestamp: null };
       const isCurrentlyLoaded = locker.loaded;
@@ -392,12 +405,12 @@
         timestamp: !isCurrentlyLoaded ? new Date().toISOString() : null
       };
 
-      set(ref(db, `lockers_v5/${key}`), updatedData);
+      set(ref(db, `lockers_v6/${key}`), updatedData);
     };
 
-    // Make sure the reset button is also protected from HTML DOM inline clicks
-    window.resetAllLockers = function(event) {
-      if (event && !event.isTrusted) return; 
+    window.resetAllLockers = function() {
+      if (botDetected) return;
+      if (Date.now() - PAGE_LOAD_TIME < 2000) return;
 
       if (confirm("Are you sure you want to reset all lockers back to Unloaded? This will reset the status for ALL shared users.")) {
         const resetData = {};
@@ -421,21 +434,21 @@
     function renderLockers() {
       gridContainer.innerHTML = '';
       
+      // Defense 3: Insert the invisible Honeypot button first
+      const honeypot = document.createElement('button');
+      honeypot.style.opacity = '0';
+      honeypot.style.position = 'absolute';
+      honeypot.style.left = '-9999px';
+      honeypot.setAttribute('onclick', 'flagSecurityBot()');
+      gridContainer.appendChild(honeypot);
+      
       for (let i = 1; i <= TOTAL_LOCKERS; i++) {
         const key = `locker_${i}`;
         const data = lockerState[key] || { loaded: false, timestamp: null };
         
         const btn = document.createElement('button');
         btn.className = `locker-btn ${data.loaded ? 'loaded' : 'unloaded'}`;
-        
-        // This is the core fix: Only physical human clicks will execute the toggle
-        btn.addEventListener('click', (e) => {
-          if (!e.isTrusted) {
-            console.log("Blocked automated security bot click.");
-            return;
-          }
-          toggleLocker(i);
-        });
+        btn.setAttribute('onclick', `toggleLocker(${i})`);
         
         const numSpan = document.createElement('span');
         numSpan.className = 'locker-number';
