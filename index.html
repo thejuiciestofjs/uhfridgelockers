@@ -398,7 +398,8 @@
         timestamp: !isCurrentlyLoaded ? new Date().toISOString() : null
       };
 
-      update(ref(db, `smart_lockers/${key}`), updatedData);
+      // Updated to match the new lockers_v3 database path
+      update(ref(db, `lockers_v3/${key}`), updatedData);
     };
 
     window.resetAllLockers = function() {
